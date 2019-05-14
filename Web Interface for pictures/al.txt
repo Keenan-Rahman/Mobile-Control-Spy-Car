@@ -1,0 +1,291 @@
+//  forward=7 backward=8 apportnum=9 left=13 right12 apportnum1=10
+//  0x64b6 for analogueWrite and digitalWrite for digitalWrite
+  int motorA1; 
+  int motorA2;
+  int motorB1;
+  int motorB2;
+  int BTState; 
+  int vspeed;     
+  int aportnum;     
+  int aportnum1;    
+  int fullspeed;  
+  int state;  
+  void assign()
+{
+   asm volatile ( "" : "=a" (motorA1)   : "a" (7)); //forward
+   asm volatile ( "" : "=a" (motorA2)   : "a" (8)); //backward
+   asm volatile ( "" : "=a" (motorB1)   : "a" (13)); //left
+   asm volatile ( "" : "=a" (motorB2)   : "a" (12)); //right
+   asm volatile ( "" : "=a" (aportnum)  : "a" (9)); //motor for forward/backward
+   asm volatile ( "" : "=a" (aportnum1) : "a" (10)); //motor for left/right
+   asm volatile ( "" : "=a" (BTState)   : "a" (2)); // for bluetooth
+   asm volatile ( "" : "=a" (vspeed)    : "a" (220));  // Default speed
+   asm volatile ( "" : "=a" (fullspeed) : "a" (250)); //fullspeed
+}  
+
+void setup() {
+    asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+//    asm volatile ("ldi r22, (OUTPUT)  \n\t"::: "r22");
+    asm volatile ("call pinMode");    
+    asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+//    asm volatile ("ldi r22, (OUTPUT)  \n\t"::: "r22");
+    asm volatile ("call pinMode");    
+    asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+//    asm volatile ("ldi r22, (OUTPUT)  \n\t"::: "r22");
+    asm volatile ("call pinMode");    
+    asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+//    asm volatile ("ldi r22, (OUTPUT)  \n\t"::: "r22");
+    asm volatile ("call pinMode");    
+    asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+//    asm volatile ("ldi r22, (OUTPUT)  \n\t"::: "r22");
+    asm volatile ("call pinMode");    
+    asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+//    asm volatile ("ldi r22, (OUTPUT)  \n\t"::: "r22");
+    asm volatile ("call pinMode");    
+    asm volatile ("lds r24, (BTState)  \n\t"::: "r24");
+//    asm volatile ("ldi r22, (INPUT)  \n\t"::: "r22");
+    asm volatile ("call pinMode");    
+    // Initialize serial communication at 9600 bits per second:
+//    asm volatile ("push %k0\n\t": "=r" (9600)); 
+//    call Serial.begin
+}
+
+void loop() {
+    //Stop car when connection lost or bluetooth disconnected
+        //asm volatile ("lds r, (BTState)  \n\t"::: "r");
+        asm volatile ("call digitalRead");    
+//       cmp eax, LOW 
+//       je l1
+//       l1: mov state, 'S' 
+    //Save income data to variable 'state'
+//      call Serial.available
+//      cmp eax, 0
+//      je l2
+//      call Serial.read
+//      l2: mov state, eax
+    /***********************Forward****************************/
+    //If state is equal with letter 'F', car will go forward!
+//      cmp state, 'F' 
+//      jne l3
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22"); 
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+//      jmp l100
+    /**********************Forward Left************************/
+    //If state is equal with letter 'G', car will go forward left
+//      l3: cmp state, 'G' 
+//      jne l4
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (vspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+//      jmp l100
+    /**********************Forward Right************************/
+    //If state is equal with letter 'I', car will go forward right
+//      l4: cmp state, 'I' 
+//      jne l5
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (vspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");        
+        asm volatile ("call digitalWrite");   
+//      jmp l100
+    /***********************Backward****************************/
+    //If state is equal with letter 'B', car will go backward
+//      l5: cmp state, 'B' 
+//      jne l6
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+//      jmp l100
+    /**********************Backward Left************************/
+    //If state is equal with letter 'H', car will go backward left
+//      l6: state, 'H' 
+//      jne l7
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (vspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+//      jmp l100
+    /**********************Backward Right************************/
+    //If state is equal with letter 'J', car will go backward right
+//      l7: cmp state, 'J' 
+//      jne l8
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (vspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+//      jmp l100
+    /***************************Left*****************************/
+    //If state is equal with letter 'L', wheels will turn left
+//      l8: cmp state, 'L' 
+//      jne l9
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22"); 
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+//      jmp l100
+    /***************************Right*****************************/
+    //If state is equal with letter 'R', wheels will turn right
+//      l9: cmp state, 'R' 
+//      jne l10
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22"); 
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("lds r22, (fullspeed) \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 1 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+//      jmp l100
+    /************************Stop*****************************/
+    //If state is equal with letter 'S', stop the car
+//      l10: cmp state, 'S'
+//      jne l100
+        asm volatile ("lds r24, (aportnum)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (aportnum1)  \n\t"::: "r24");
+        asm volatile ("ldi r23, 0 \n\t":::"r23");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call analogWrite");   
+        asm volatile ("lds r24, (motorA1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorA2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB1)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+        asm volatile ("lds r24, (motorB2)  \n\t"::: "r24");
+        asm volatile ("ldi r22, 0 \n\t":::"r22");
+        asm volatile ("call digitalWrite");   
+//    l100:
+}
